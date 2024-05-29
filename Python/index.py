@@ -1,9 +1,26 @@
 # Definindo as funções
 
+import textwrap
+
 
 usuarios = []  # Lista para armazenar os usuários
 contas_correntes = []  # Lista para armazenar as contas correntes
 numero_conta = 1  # Primeiro digito da conta
+
+def menu():
+    menu = """\n 
+    ======================= MENU =======================
+
+    [0] Depositar
+    [1] Sacar
+    [2] Extrato
+    [3] Nova conta
+    [4] Novo usuário
+    [5] Minhas contas
+    [6] Sair
+
+    => """
+    return input(textwrap.dedent(menu))
 
 def vincular_usuario_por_cpf(cpf):
     for usuario in usuarios:
@@ -51,7 +68,7 @@ def criar_conta_corrente(usuario):
     numero_conta += 1
 
     # Buscar o usuário pelo CPF
-    usuario = vincular_usuario_por_cpf(cpf)
+    usuario = vincular_usuario_por_cpf(cpf) # type: ignore
     if usuario is None:
         print("Erro: Nenhum usuário encontrado com o CPF fornecido.")
         return None
@@ -101,6 +118,7 @@ def sacar(*,valor, extrato, numero_saques, limite_saques, limite):
     return extrato, numero_saques
 
 def visualizar_extrato(extrato, saldo=None):
+
     if saldo is not None:
 
         print("\n================ EXTRATO ================")
@@ -112,45 +130,46 @@ def visualizar_extrato(extrato, saldo=None):
         print("Não foram realizadas movimentações." if not extrato else extrato)
         print("==========================================")
 
-usuarios = []
+def main():
+    global usuarios, contas_correntes  # Declarar como globais
 
-# menu principal
+    AGENCIA = "0001"
+    LIMITE_SAQUES = 3
+    saldo = 0
+    extrato = ""
+    numero_saques = 0
+    limite = 500
+    usuarios = []
+    contas_correntes = []
 
-menu = """
-[0] Depositar
-[1] Sacar
-[2] Extrato
-[3] Sair
+    while True:
+        opcao = menu()
+        
+        if opcao == "0":
+            valor = float(input("Informe o valor do depósito: "))
+            saldo, extrato = depositar(valor, extrato)
 
-=> """
+        elif opcao == "1":
+            valor = float(input("Informe o valor do saque: "))
+            extrato, numero_saques = sacar(valor=valor, extrato=extrato, numero_saques=numero_saques, limite_saques=LIMITE_SAQUES, limite=limite)
 
+        elif opcao == "2":
+            visualizar_extrato(extrato, saldo=saldo)
 
-saldo = 0
-extrato = ""
-numero_saques = 0
-limite = 500
-LIMITE_SAQUES = 3
+        elif opcao == "3":
+            novo_usuario = criar_usuario()
+            if novo_usuario:
+                usuarios.append(novo_usuario)
 
-while True:
-    opcao = input(menu)
+        elif opcao == "4":
+            cpf_usuario = input("Informe o CPF do usuario para criar a conta corrente: ")
+            nova_conta_corrente = criar_conta_corrente(cpf_usuario)
 
-    if opcao == "0":
-        valor = float(input("Informe o valor do depósito: "))
-        extrato = depositar(valor, extrato)
+        elif opcao == "6":
+            print("Obrigado por utilizar nosso app!...")
+            break
 
-    elif opcao == "1":
-        valor = float(input("Informe o valor do saque: "))
-        extrato, numero_saques = sacar(valor=valor, extrato=extrato, numero_saques=numero_saques, limite_saques=LIMITE_SAQUES, limite=limite)
+        else:
+            print("Operação inválida, por favor selecione novamente a operação desejada.")
 
-
-    elif opcao == "2":
-        visualizar_extrato(extrato)
-        visualizar_extrato(extrato, saldo=saldo)
-
-
-    elif opcao == "3":
-        print("Obrigado por utilizar nosso app!...")
-        break
-
-    else:
-        print("Operação inválida, por favor selecione novamente a operação desejada.")
+main()
