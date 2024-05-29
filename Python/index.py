@@ -149,6 +149,7 @@ while True:
 
 
     elif opcao == "3":
+        print("Obrigado por utilizar nosso app!...")
         break
 
     else:
