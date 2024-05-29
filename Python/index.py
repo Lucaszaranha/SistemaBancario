@@ -57,7 +57,7 @@ def criar_usuario():
     print("Usuário cadastrado com sucesso!")
     return usuario
 
-def criar_conta_corrente(usuario):
+def criar_conta_corrente(cpf):
     global numero_conta
     
     # Agência fixa
@@ -68,7 +68,7 @@ def criar_conta_corrente(usuario):
     numero_conta += 1
 
     # Buscar o usuário pelo CPF
-    usuario = vincular_usuario_por_cpf(cpf) # type: ignore
+    usuario = vincular_usuario_por_cpf(cpf)
     if usuario is None:
         print("Erro: Nenhum usuário encontrado com o CPF fornecido.")
         return None
@@ -130,6 +130,13 @@ def visualizar_extrato(extrato, saldo=None):
         print("Não foram realizadas movimentações." if not extrato else extrato)
         print("==========================================")
 
+def contar_contas_por_cpf(cpf):
+    count = 0
+    for conta in contas_correntes:
+        if conta["usuario"]["cpf"] == cpf:
+            count += 1
+    return count
+
 def main():
     global usuarios, contas_correntes  # Declarar como globais
 
@@ -164,6 +171,11 @@ def main():
         elif opcao == "4":
             cpf_usuario = input("Informe o CPF do usuario para criar a conta corrente: ")
             nova_conta_corrente = criar_conta_corrente(cpf_usuario)
+
+        elif opcao == "5":
+            cpf_usuario = input("Informe o seu CPF: ")
+            num_contas = contar_contas_por_cpf(cpf_usuario)
+            print(f"Você tem {num_contas} contas associadas ao seu CPF.")
 
         elif opcao == "6":
             print("Obrigado por utilizar nosso app!...")
